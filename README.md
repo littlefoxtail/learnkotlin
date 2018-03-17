@@ -1,8 +1,5 @@
-# learnkotlin
-学業kotlin
-
+# Kotlin
 ## 基础概念
-
 ### Numbers
 类型和位数差不多都与java相同
 
@@ -65,7 +62,6 @@ import foo.*
 
 
 ## Control Flow
-
 
 ### if
 Kotlin中没有三元运算符
@@ -274,7 +270,7 @@ kotlin中有四个可见性修饰符`private`、`protected`、`internal`和`publ
 
 ### 包
 顶层声明：
-```
+```kotlin
 package foo
 
 fun baz() {
@@ -296,6 +292,396 @@ class Bar {
 2. protected—— 和 private一样 + 在子类中可见。
 3. internal —— 能见到类声明的 本模块内 的任何客户端都可见其 internal 成员；
 4. public —— 能见到类声明的任何客户端都可见其 public 成员。
+
+### 构造函数
+
+可以指定一个类的主构造函数的可见性，以下语法：
+```
+class C private constructor(a: Int) {...}
+```
+### 局部变量
+局部变量、函数和类不能有可见性修饰符
+
+### 模块
+可见性修饰符`internal`意味着该成员只在相同模块内可见。一个模块是编译在一起的一套Kotlin文件：
+* 一个intellij IDEA模块
+* 一个Maven项目
+* 一个Gradle源集
+* 一次<kotlin>Ant任务执行所编译的一套文件
+
+## 扩展
+
+### 扩展函数
+```kotlin
+fun MutableList<Int>.swap(index1: Int, index2: Int) {
+    //this对应着被扩展类型的对象
+    val tmp = this[index1]
+    this[index1] = this[index2]
+    this[index2] = tmp
+}
+```
+1. 扩展不能真正的修改他们所扩展的类。通过定义一个扩展，仅仅是可以通过该类型的变量用点表达式去调用这个新函数
+
+2. 调用扩展函数是由函数调用所在的表达式的类型来决定的，而不是运行时
+
+3. 扩展函数接收者可以为空，这样的扩展在对象变量上调用，其值可以为null
+
+4. 扩展属性不能有初始化器，因为没有幕后属性
+
+### 扩展属性
+```kotlin
+val <T> List<T>.lastInde: Int
+    get() = size - 1
+```
+
+## 数据类
+
+只保存数据的类
+```kotlin
+data class User(val name: String, val age: Int)
+```
+
+- 主构造函数需要至少有一个参数
+- 主构造函数的所有参数需要标记为`val`或`var`
+- 数据不能是抽象、开放、密封或者内部
+
+
+### 在类体重声明的属性
+对于自动生成的函数，只能使用在主构造函数内部定义的属性
+
+### 复制
+```kotlin
+fun copy(name: String = this.name, age: Int = this.age) = User(name, age)
+```
+
+### 数据类和解构声明
+数据类生成的*Component*函数使它们可在解构声明中使用
+
+## 密封类
+密封类用来表示受限的类继承结构；当一个值为有限集中的类型、而不能有任何其他类型时。
+
+1. 密封类也可以有子类，但是所有的子类都必须在于密封类自身相同的文件中声明
+2. 密封类自身是抽象的，它不能直接实例化并可以有抽象(abstract)成员
+3. 密封类不允许有非`private`构造函数(其构造函数默认为`private`)
+4. 扩展密封子类的类(间接继承者)可以放在任何位置，而无需再同一个文件中
+
+## 泛型(有点复杂暂时延后)
+与java类似，但如果可以推断出来，运行省略
+
+### 型变
+一个类`C`的类型参数`T`被声明为`out`时，它就只能出现在`C`的成员的**输出**-位置，但回报是`C<Base>`可以安全地作为`C<Derived>`的超类
+
+`out`修饰符称为**型变注解**，并且由于它的类型参数声明处提供，所以讲声明处型变。这与java的使用处型变相反。
+
+转换：消费者in,生产者out
+
+### 类型投影
+
+## 嵌套类与内部类
+
+
+### 内部类
+`inner`
+
+### 匿名内部类
+使用对象表达式创建匿名内部类实例：
+
+```kotlin
+window.addMouseListener(object: MouseAdapter()) {
+    override fun mouseClicked(e: MouseEvent) {
+
+    }
+
+    override fun mouseEntered(e: MouseEvent) {
+
+    }
+} 
+```
+如果对象是函数式java接口，可以使用带接口类型前缀的lambda表达式创建它
+```kotlin
+val listener = ActionListener {println("clicked")}
+```
+
+## 枚举类
+```kotlin
+enum class Direction {
+    NORTH, SOURTH, WEST, EAST
+}
+```
+
+### 匿名类
+枚举常量可以声明自己的匿名类
+```kotlin
+enum class ProtocolState {
+    WAITING {
+        override fun signal() = TALKING
+    },
+
+    TALKING {
+        override fun signal() = WAITING
+    },
+
+    abstract fun signal(): ProtocolState
+}
+```
+
+### 枚举常量
+```kotlin
+EnumClass.valueOf(value: String): EnumClass
+EnumClass.values(): Array<EnumClass>
+```
+
+## 对象
+### 对象表达式
+
+```kotlin
+window.addMouseListener(object: MouseAdapter() {
+    override fun mouseClicked(e: MouseEvent) {
+        //...
+    }
+
+    override fun mouseEntered(e: MouseEvent) {
+        //...
+    }
+})
+```
+
+构造函数与超类型
+```kotlin 
+val ab: A = object : A(1), B {
+    override val y = 15
+}
+```
+
+如果不需要特殊超类
+```kotlin
+fun foo() {
+    val adHoc = object {
+        val x: Int = 0
+        val y: Int = 0
+    }
+    print(abHoc.x + adHoc.y)
+}
+```
+
+
+匿名对象可以用作只在本地和私有作用域中声明的类型。
+```kotlin
+class C {
+    //私有函数，所以其返回类型是匿名函数对象类型
+    private fun foo() = object {
+        val x: String = "x"
+    }
+
+    //共有函数，所以其返回类型是Any
+    fun publicfoo() = object {
+        val x: String = "x"
+    }
+
+    fun bar() {
+        val x1 = foo().x //没有问题
+        val x2 = publicFoo().x //错误：未能解析的引用"x"
+    }
+}
+```
+
+与java匿名内部类一样，对象表达式可以访问来自包含它的作用域的变量。(不只是final)
+
+### 对象声明
+单例模式
+
+```kotlin
+object DataProviderManager {
+    fun registerDataProvider(provider: DataProvider) {
+
+    }
+
+    val allDataProviders: Collection<DataProvider>
+        get() = // ...
+}
+```
+
+这称为对象声明。并且总是在`object`关键字后跟一个名称。就像变量声明一样，对象声明不是一个表达式，不能用在赋值语句的右边
+1. 对象声明的初始化过程是线程安全的
+2. 如需要引入该对象，直接使用其名称即可
+3. 直接使用名称就行(跟java用静态似的)
+4. 可以有超类型
+
+
+### 伴生对象
+类内部的对象声明可以用`companion`关键字标记
+```kotlin
+class MyClass {
+    companion object Factory {
+        fun create() : MyClass = MyClass()
+    }
+}
+```
+
+该伴生对象的成员可通过只使用类名作为限定符来调用
+```kotlin
+val instance = MyClass.create()
+```
+1. 可以省略伴生对象的名称，这种情况下使用名称: `Companion`:
+
+
+#### 对象表达式和对象声明之间的语义差异
+- 对象表达式是在使用他们的地方立即执行(及初始化)的
+- 对象声明是在第一次被访问到时延迟初始化的
+- 伴生对象的初始化是在相应的类被加载（解析）时，与java静态初始化器语义相匹配
+
+## 委托
+委托模式已经证明是实现继承的一个很好的替代方式
+by-子句，编译器将生产转发给委托类的所有方法
+
+
+## 委托属性
+kotlin支持*委托属性*
+语法：`val/var` <属性名>: <类型> by <表达式>
+在by后面的表达式是该委托，因为属性对应的`get()`和`set()`会被委托给它的`getValue()`和`setValue()`方法。
+属性的委托不必实现任何的接口，但是需要提供一个`getValue()`函数（和`setValue()`--对于`var`属性）
+```kotlin
+class Example {
+    var p: String by Delegate()
+}
+```
+
+委托属性的要求：
+
+1. 对于只读属性(val)，委托必须提供一个名为`getValue`的函数，该函数接受以下参数：
+    - thisRef 必须与属性所有者类型相同或者是它的超类型
+    - property 必须是类型KProperty<*>及其超类型
+
+2. 这个函数必须返回与属性相同的类型(或其子类型)
+3. 两函数都需要用`operator`关键字来进行标记
+4. 委托类可以实现包含所需`operator`方法的`ReadOnlyProperty` 或 `ReadWriteProperty` 接口之一。 这俩接口是在 Kotlin 标准库中声明的
+
+翻译规则：
+Kotlin 编译器都会生成辅助属性并委托给它
+```kotlin
+class C {
+    var prop : Type by MyDelegate()
+}
+
+//编译器生成的相应代码
+class C {
+    private val prop$delegate = MyDelegate()
+    val prop: Type
+        get() = prop$delegate.getValue(this. this::prop)
+        set(value: Type) = prop$delegate.setValue(this, this::prop, value) 
+}
+```
+### 标准委托
+#### 延迟属性Lazy
+lazy是接受一个lambda并返回一个`Lazy<T>`实例的函数，返回的实例可以作为实现延迟属性的委托：
+第一次调用`get()`会执行已传递给`lazy()`的lambda表达式并记录结果，后续调用`get()`只是返回记录的结果
+
+#### 可观察性Observable
+
+`Delegates.observable()`接受两个参数：初始值和修改时处理程序(handler)。每当给属性赋值时会调用该处理程序
+
+#### 把属性存储在映射中
+
+```kotlin
+class User(val map: Map<String, Any?>) {
+    val name: String by map
+    val age: Int by map
+}
+```
+
+```kotlin
+val user = User(mapOf(
+    "name" to "John Doe"
+    "age" to 23
+))
+```
+
+委托属性会从这个映射中取值(通过字符串键一一属性的)
+```kotlin
+println(user.name)
+println(user.age)
+```
+## 函数
+```kotlin
+fun double(x: Int): Int {
+    return 2 * x
+}
+```
+
+### 参数
+函数参数使用Pascal表示法定义，即*name:type*。参数用逗号隔开
+
+可以通过使用星号操作符将可变数量参数，以命名形式传入:
+```kotlin
+fun foo(vararg string: String) {/** .. */}
+foo(strings = *arrayOf("a", "b", "c"))
+```
+
+### 单表达式
+当函数返回单个表达式时，可以省略花括号并且在=符号之后指定代码
+```kotlin
+fun double(x: Int): Int = x * 2
+```
+当返回值类型可由编译器推断时，显示声明返回类型是可选的
+
+### 显示返回类型
+Kotlin 不推断具有块代码体的函数的返回类型
+
+### 可变数量的参数(Varargs)
+函数的参数可以用`varargs`修饰符标记
+```kotlin
+fun <T> asList(vararg ts: T): List<T> {
+    val result = ArrayList()
+    for (t in ts)
+        result.add(t)
+    return result
+}
+```
+```kotlin
+val list = asList(1, 2, 3)
+```
+### 中缀表示法
+标有`infix`关键字的函数也可以使用中缀表示法。
+
+- 它们必须是成员函数或扩展函数
+- 它们必须只有一个参数
+- 其参数不接受可变数量的参数且不能有默认值
+
+```kotlin
+infix fun Int.shl(x: Int): Int {
+    // ...
+}
+```
+
+## 高阶函数和Lambda
+### 高阶函数
+高阶函数是将函数用作参数或返回值的函数。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
