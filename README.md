@@ -653,9 +653,130 @@ infix fun Int.shl(x: Int): Int {
 }
 ```
 
+### 函数作用域
+
+#### 局部函数
+Kotlin支持局部函数，即一个函数在另一个函数内部
+
+局部函数可以访问外部函数(即闭包)的局部变量
+
+
+#### 成员函数
+成员函数是在类或对象内部定义的函数
+
+#### 泛型函数
+函数可以有泛型参数，通过在函数名前使用尖括号指定
+
+
+
 ## 高阶函数和Lambda
 ### 高阶函数
 高阶函数是将函数用作参数或返回值的函数。
+
+
+### 函数类型
+对于接受另一函数作为参数的函数，我们必须为该函数指定函数类型。
+```kotlin
+fun <T> max(collection: Collection<T>, less: (T, T) -> Boolean): T? {
+    var max: T? = null
+    for (it in collection)
+        if (max == null || less(max, it))
+            max = it
+    return max
+}
+```
+参数`less`的类型是`(T, T) -> Boolean`，即一个接受两个类型`T`的参数并返回一个布尔值的函数
+less作为一个函数使用：通过传入的两个`T`类型的参数来调用
+```kotlin
+val compare: (x: T, y: T) -> Int = ...
+```
+
+如果声明一个函数类型的可空变量，请将整个函数类型括在括号中并在其后加上句号
+```kotlin
+val sum: ((Int, Int) -> Int)? = null
+```
+
+### Lambda表达式语法
+Lambda表达式的完整语法形式，即函数类型的字面值如下：
+```kotlin
+val sum = { x: Int, y: Int -> x + y}
+```
+完整
+```kotlin
+val sum: (Int, Int) -> Int = { x, y -> x + y}
+```
+
+lambda表示式总是括在花括号中，完整语法形式的参数声明放在花括号内，并有可选的类型标注，
+函数体跟在一个`->`符号之后，如果推断出该lambda的返回类型不是Unit，那么该lambda主体
+中的最后一个(或可能是单个)表达式可视为返回值
+
+一个lambda表达式只有一个参数是很常见的。如果Kotlin可以自己计算出签名，它允许我们不声明唯一的参数，
+并且将隐含地位我们声明其名称为`it`：
+
+1. lambda返回值
+可以使用限定返回语法从lambda显示返回一个值。否则，将隐身返回最后一个表达式的值。因此，以下两个片段是等价：
+```kotlin
+ints.filter {
+    val shouldFilter = it > 0
+    shouldFilter
+}
+```
+
+```kotlin
+ints.filter {
+    val shouldFilter = it > 0
+    return@filter shouldFilter
+}
+```
+
+### 匿名函数
+lambda语法可以推断返回类型，但是如果要显示指定的话，可以使用匿名函数：
+```kotlin
+fun(x: Int, y: Int): Int = x + y
+```
+
+1. 参数和返回类型的指定凡是与常规函数相同，普通函数不能够从上下文推断的参数类型省略，但匿名函数可以
+2. Lambda表达式与匿名函数之间的另一个区别是非局部返回的行为。一个不带标签的 return 语句总是在用 fun 关键字声明的函数中返回
+
+### 闭包
+Lambda表达式或匿名函数，可以访问其闭包。即在外部作用域中声明的变量。
+与java不同的是可以修改闭包中捕获的变量:
+```kotlin
+val sum = 0
+ints.filter { it > 0}
+```
+
+### 带接收者的函数字面值
+Kotlin提供了使用指定的接收者对象调用函数字面值的功能。类似于扩展函数
+
+带有接收者的函数类型的字面值可以在赋值或者传参中用于期待多出第一个参数为接收者类型的普通函数的地方
+
+## 内联函数
+使用高阶函数会带来一些运行时的效率损失：每个函数都是一个对象，并且会捕获一个闭包
+
+使用`inline`修饰符标记`lock()`函数
+```kotlin
+inline fun <T> lock(lock: Lock, body: () -> T): T {
+
+}
+```
+`inline`修饰符影响函数本身和传给它的lambda表达式：所有将这些都将内联到调用处
+
+### 禁用内联
+`noinline`
+
+可内联的lambda表达式只能在内联函数内部调用或者作为可内联的参数传递，但是`noinline`的可以以任何方式操作:存储在字段中、传送它
+
+
+
+### 函数引用
+使用`::`操作符，可以把函数作为一个值传递。
+
+```kotlin
+fun isOdd(x: Int) = x %2 != 0
+```
+
+`::isOdd`是函数类型`(Int) -> Boolean`的一个值
 
 
 
