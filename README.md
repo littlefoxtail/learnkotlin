@@ -93,7 +93,6 @@ kotlin中可以标记为label，写法`@$标识符`
 
 ```kotlin
 loop@ for (item in 1..50) {
-
       println(item)
       if (item == 25) {
         println("执行了25")
@@ -365,8 +364,13 @@ fun copy(name: String = this.name, age: Int = this.age) = User(name, age)
 3. 密封类不允许有非`private`构造函数(其构造函数默认为`private`)
 4. 扩展密封子类的类(间接继承者)可以放在任何位置，而无需再同一个文件中
 
-## 泛型(有点复杂暂时延后)
+## 泛型
 与java类似，但如果可以推断出来，运行省略
+
+1. 在java中泛型是不型变的，`List<String>`并不是`List<Object>`的子类型，但是带`extends`限定的通配符类型使得类型是协变的(convariant)
+
+`<? extends Object>` 对应 `<out Object>`
+`<? super String>` 对应`<in String>`
 
 ### 型变
 一个类`C`的类型参数`T`被声明为`out`时，它就只能出现在`C`的成员的**输出**-位置，但回报是`C<Base>`可以安全地作为`C<Derived>`的超类
@@ -375,7 +379,26 @@ fun copy(name: String = this.name, age: Int = this.age) = User(name, age)
 
 转换：消费者in,生产者out
 
-### 类型投影
+### 星投影
+1. 对于Foo <out T : TUpper>，其中`T`是一个具有上界`TUpper`的协变类型，`Foo<*>`等价于`Foo<out TUpper>`。这意味着当`T`未知时，可以安全地从`Foo <*>`读取`TUpper`
+2. 对于Foo <in T>，其中`T`是一个逆变类型参数，`Foo <*>`等价于`Foo <in Nothing>`
+3. 对于Foo <T : TUpper>，其中`T`是一个具有上界`TUpper`的不型变类型参数，`Foo<*>`对于读取值时等价于`Foo<out Tupper>`，而对于写值等价于`Foo<in Nothing>`
+
+### 泛型函数
+类可以有类型参数，函数也可以。放在函数名称之前
+
+### 泛型约束
+能够替换给定类型参数的所有可能类型的集合可以由泛型约束限制
+
+#### 上界
+```kotlin
+fun <T : Comparable<T>> sort(list: List<T>) {
+    //...
+}
+```
+1. 冒号之后指定的类型是上界：只有`Comparable<T>`的子类型可以替代`T`
+2. 默认的上届是`Any?`。在尖括号只能指定一个上界。
+
 
 ## 嵌套类与内部类
 
@@ -768,8 +791,56 @@ inline fun <T> lock(lock: Lock, body: () -> T): T {
 可内联的lambda表达式只能在内联函数内部调用或者作为可内联的参数传递，但是`noinline`的可以以任何方式操作:存储在字段中、传送它
 
 
+## 其他
 
-### 函数引用
+### 解构声明
+有时候把一个对象*解构*成很多变量会很方便
+```kotlin
+val (name, age) = person
+```
+
+### 区间
+区间表达式由具有操作符形式`..`的`rangeTo`函数辅以`in`和`!in`。区间是为任何可比较类型定义的，但对于整型原生类型，它有一个优化的实现
+
+```kotlin
+if (i in 1..10) {
+    println(i)
+}
+```
+
+整型区别(IntRange、LongRange、CharRange)有一个额外的特性：它们可以迭代。编译器负责将其转换为类似java的基于索引的`for`循环而无额外开销
+
+
+### 类型的检查与转换"is"与"as"
+
+#### is操作符
+在运行时通过使用`is`来检查对象是否符合给定对象
+
+#### 智能转换
+因为编译器跟中不可变值`is`检查以及显示转换，并在需要时自动插入转换
+
+### 空安全
+
+#### Elvis操作符
+```kotlin
+val l = b?.length ?: -1
+```
+`?:`左侧表达式非空，elvis操作符就返回其左侧表达式，否则返回右侧表达式。当且仅当左侧为空时，才会对右侧表达式求值
+`throw`和`return`在Kotlin中都是表达式
+
+#### !!操作符
+非空断言运算符(!!)将任何值转换为非空类型，若该值为空则抛出异常。
+`b!!`这会返回一个非空`b`值或者`b`为空，就会抛出`NPE`异常
+
+#### 安全的类型转换
+如果尝试转换不成功则返回null
+
+```kotlin
+val aInt: Int? = a as? Int
+```
+
+### 反射
+#### 函数引用
 使用`::`操作符，可以把函数作为一个值传递。
 
 ```kotlin
