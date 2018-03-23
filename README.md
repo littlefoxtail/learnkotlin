@@ -839,6 +839,12 @@ val l = b?.length ?: -1
 val aInt: Int? = a as? Int
 ```
 
+### This表达式
+为了表示当前*接受者*使用`this`表达式
+- 在类的成员中，this指的是该类的当前对象
+- 在扩展函数或者带接接收者的函数字面值中，this表示在点左侧传递的接收者参数
+
+
 ### 反射
 #### 函数引用
 使用`::`操作符，可以把函数作为一个值传递。
@@ -848,6 +854,50 @@ fun isOdd(x: Int) = x %2 != 0
 ```
 
 `::isOdd`是函数类型`(Int) -> Boolean`的一个值
+
+```kotlin
+val c = MyClass::class
+```
+该引用是`KClass`类型的值
+Kotlin类引用于java类引用不同。要获得java类引用，在`KClass`实例上使用`.java`属性
+
+String::toCharArray为类型`String`提供了一个扩展函数`String.() -> CharArray`
+
+#### 绑定的类引用
+通过使用对象作为接收者，可以用相同`::class`语法获取对象的类的引用
+```kotlin
+val ge = Generics()
+println(ge::class)
+```
+
+#### 属性引用
+1. 表达式`::x`求值为`KProperty<Int>`类型的属性对象，它允许我们使用`get()`读取它的值，或者使用`name`属性来获取属性名
+
+2. 对于可变属性，`var y = 1`，`::y`返回KMutableProperty<Int>类型的一个值，该类型有一个`set()`方法
+
+3. 属性引用可以用在不需要参数的函数处
+```kotlin
+val strs = listOf("a", "bc", "def")
+println(strs.map(String::length))
+```
+4. 要访问类的成员属性
+```kotlin
+class A(val p: Int)
+
+fun main(args: Array<String>) {
+    val prop = A::p
+    println(prop.get(A(1)))
+}
+```
+
+
+
+
+
+
+
+
+
 
 
 
