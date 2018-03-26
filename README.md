@@ -1,4 +1,6 @@
 # Kotlin
+[kotlin Android Extensions](./android_extensions.md)
+
 ## 基础概念
 ### Numbers
 类型和位数差不多都与java相同
