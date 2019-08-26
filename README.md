@@ -59,6 +59,7 @@ import foo.*
 
 * 不同点
   * 遇到类名冲突，可以用as修改冲突的实体
+  
     ```kotlin
     import foo.Bar
     import bar.Bar as bBar 
@@ -244,6 +245,7 @@ var <propertyName>[: <PropertyType>] [= <property_initializer>]
 ```
 
 ### 幕后字段
+
 在Kotlin类中不能直接声明字段。然而，当一个属性需要一个幕后字段时，Kotlin会自动提供`field`
 只能在属性的访问器内
 
