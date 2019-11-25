@@ -22,7 +22,7 @@
 
     必须显示转换，才能将强转为更宽泛的类型
 
-    ```kotlin
+    ```kt
     val b: Byte = 1
     val i: Int = b.toInt()
     ```
@@ -49,18 +49,18 @@
 
 * 大体上与java相符
 
-```kotlin
+```kt
 import foo.Bar
 ```
 
-```kotlin
+```kt
 import foo.*
 ```
 
 * 不同点
   * 遇到类名冲突，可以用as修改冲突的实体
   
-    ```kotlin
+    ```kt
     import foo.Bar
     import bar.Bar as bBar 
     ```
@@ -86,7 +86,7 @@ when 也可以用来替换`if-else`
 
 ### Loops
 
-```kotlin
+```kt
 for (item in arrar) {
 
 }
@@ -103,7 +103,7 @@ for (item in arrar) {
 
 kotlin中可以标记为label，写法`@$标识符`
 
-```kotlin
+```kt
 loop@ for (item in 1..50) {
       println(item)
       if (item == 25) {
@@ -118,7 +118,7 @@ loop@ for (item in 1..50) {
 1. return默认返回给当前位置调用这个函数的调用者
 2. return标签可以使得在函数内部返回
 
-```kotlin
+```kt
  listOf(1, 3, 5, 7, 9).forEach lit@ {
       if (it == 3) return@lit
       println(it)
@@ -137,7 +137,7 @@ loop@ for (item in 1..50) {
 
 类也可以声明前缀有`constructor`
 
-```kotlin
+```kt
 class Person {
     construcor(parent: Person) {
         parent.children.add(this)
@@ -147,7 +147,7 @@ class Person {
 
 次构造函数委托给主构造，可以直接委托或者间接委托
 
-```kotlin
+```kt
 class Person(val name: String) {
     constructor(name: String, parent: Person) : this(name) {
         parent.children.add(this)
@@ -162,7 +162,7 @@ class Person(val name: String) {
 kotlin中没有`new`关键字
 创建一个类的实例，跟普通函数一样调用构造函数
 
-```kotlin
+```kt
 val invoice = Invoice()
 ```
 
@@ -174,7 +174,7 @@ Kotlin中所有的类都有一个共同的超类`Any`，这对于没有超类型
 
 要声明一个显示的超类型，把类型放到类头的冒号之后
 
-```kotlin
+```kt
 open class Base(p: Int)
 
 class Derived(p: Int) : Base(p)
@@ -186,7 +186,7 @@ class Derived(p: Int) : Base(p)
 
 Kotlin需要显示标注可覆盖的成员和覆盖后的成员
 
-```kotlin
+```kt
 open class Base {
     open fun v() {}
     fun nv{}
@@ -201,7 +201,7 @@ class Derived() : Base() {
 
 直接覆盖或者覆盖`get`方法
 
-```kotlin
+```kt
 open class Foo {
     open val x: Int get() {
         return 1
@@ -291,7 +291,7 @@ public val table: Map<String, Int>
 
 接口可以有属性但必须声明为抽象或提供访问器实现
 
-```kotlin
+```kt
 interface MyInterface {
     fun bar()
     fun foo()
@@ -307,7 +307,7 @@ kotlin中有四个可见性修饰符`private`、`protected`、`internal`和`publ
 
 顶层声明：
 
-```kotlin
+```kt
 package foo
 
 fun baz() {
@@ -335,7 +335,7 @@ class Bar {
 
 可以指定一个类的主构造函数的可见性，以下语法：
 
-```kotlin
+```kt
 class C private constructor(a: Int) {...}
 ```
 
@@ -356,7 +356,7 @@ class C private constructor(a: Int) {...}
 
 ### 扩展函数
 
-```kotlin
+```kt
 fun MutableList<Int>.swap(index1: Int, index2: Int) {
     //this对应着被扩展类型的对象
     val tmp = this[index1]
@@ -372,7 +372,7 @@ fun MutableList<Int>.swap(index1: Int, index2: Int) {
 
 ### 扩展属性
 
-```kotlin
+```kt
 val <T> List<T>.lastInde: Int
     get() = size - 1
 ```
@@ -381,7 +381,7 @@ val <T> List<T>.lastInde: Int
 
 只保存数据的类
 
-```kotlin
+```kt
 data class User(val name: String, val age: Int)
 ```
 
@@ -395,7 +395,7 @@ data class User(val name: String, val age: Int)
 
 ### 复制
 
-```kotlin
+```kt
 fun copy(name: String = this.name, age: Int = this.age) = User(name, age)
 ```
 
@@ -445,7 +445,7 @@ fun copy(name: String = this.name, age: Int = this.age) = User(name, age)
 
 #### 上界
 
-```kotlin
+```kt
 fun <T : Comparable<T>> sort(list: List<T>) {
     //...
 }
@@ -464,7 +464,7 @@ fun <T : Comparable<T>> sort(list: List<T>) {
 
 使用对象表达式创建匿名内部类实例：
 
-```kotlin
+```kt
 window.addMouseListener(object: MouseAdapter()) {
     override fun mouseClicked(e: MouseEvent) {
 
@@ -478,13 +478,13 @@ window.addMouseListener(object: MouseAdapter()) {
 
 如果对象是函数式java接口，可以使用带接口类型前缀的lambda表达式创建它
 
-```kotlin
+```kt
 val listener = ActionListener {println("clicked")}
 ```
 
 ## 枚举类
 
-```kotlin
+```kt
 enum class Direction {
     NORTH, SOURTH, WEST, EAST
 }
@@ -494,7 +494,7 @@ enum class Direction {
 
 枚举常量可以声明自己的匿名类
 
-```kotlin
+```kt
 enum class ProtocolState {
     WAITING {
         override fun signal() = TALKING
@@ -510,7 +510,7 @@ enum class ProtocolState {
 
 ### 枚举常量
 
-```kotlin
+```kt
 EnumClass.valueOf(value: String): EnumClass
 EnumClass.values(): Array<EnumClass>
 ```
@@ -519,7 +519,7 @@ EnumClass.values(): Array<EnumClass>
 
 ### 对象表达式
 
-```kotlin
+```kt
 window.addMouseListener(object: MouseAdapter() {
     override fun mouseClicked(e: MouseEvent) {
         //...
@@ -533,7 +533,7 @@ window.addMouseListener(object: MouseAdapter() {
 
 构造函数与超类型
 
-```kotlin
+```kt
 val ab: A = object : A(1), B {
     override val y = 15
 }
@@ -541,7 +541,7 @@ val ab: A = object : A(1), B {
 
 如果不需要特殊超类
 
-```kotlin
+```kt
 fun foo() {
     val adHoc = object {
         val x: Int = 0
@@ -553,7 +553,7 @@ fun foo() {
 
 匿名对象可以用作只在本地和私有作用域中声明的类型。
 
-```kotlin
+```kt
 class C {
     //私有函数，所以其返回类型是匿名函数对象类型
     private fun foo() = object {
@@ -578,7 +578,7 @@ class C {
 
 单例模式
 
-```kotlin
+```kt
 object DataProviderManager {
     fun registerDataProvider(provider: DataProvider) {
 
@@ -600,7 +600,7 @@ object DataProviderManager {
 
 类内部的对象声明可以用`companion`关键字标记
 
-```kotlin
+```kt
 class MyClass {
     companion object Factory {
         fun create() : MyClass = MyClass()
@@ -610,13 +610,13 @@ class MyClass {
 
 该伴生对象的成员可通过只使用类名作为限定符来调用
 
-```kotlin
+```kt
 val instance = MyClass.create()
 ```
 
 1. 可以省略伴生对象的名称，这种情况下使用名称: `Companion`:
 
-```kotlin
+```kt
 class MyClass {
     companion object {
 
@@ -643,7 +643,7 @@ kotlin支持*委托属性*
 在by后面的表达式是该委托，因为属性对应的`get()`和`set()`会被委托给它的`getValue()`和`setValue()`方法。
 属性的委托不必实现任何的接口，但是需要提供一个`getValue()`函数（和`setValue()`--对于`var`属性）
 
-```kotlin
+```kt
 class Example {
     var p: String by Delegate()
 }
@@ -662,7 +662,7 @@ class Example {
 翻译规则：
 Kotlin 编译器都会生成辅助属性并委托给它
 
-```kotlin
+```kt
 class C {
     var prop : Type by MyDelegate()
 }
@@ -689,14 +689,14 @@ lazy是接受一个lambda并返回一个`Lazy<T>`实例的函数，返回的实�
 
 #### 把属性存储在映射中
 
-```kotlin
+```kt
 class User(val map: Map<String, Any?>) {
     val name: String by map
     val age: Int by map
 }
 ```
 
-```kotlin
+```kt
 val user = User(mapOf(
     "name" to "John Doe"
     "age" to 23
@@ -705,14 +705,14 @@ val user = User(mapOf(
 
 委托属性会从这个映射中取值(通过字符串键一一属性的)
 
-```kotlin
+```kt
 println(user.name)
 println(user.age)
 ```
 
 ## 函数
 
-```kotlin
+```kt
 fun double(x: Int): Int {
     return 2 * x
 }
@@ -724,7 +724,7 @@ fun double(x: Int): Int {
 
 可以通过使用星号操作符将可变数量参数，以命名形式传入:
 
-```kotlin
+```kt
 fun foo(vararg string: String) {/** .. */}
 foo(strings = *arrayOf("a", "b", "c"))
 ```
@@ -733,7 +733,7 @@ foo(strings = *arrayOf("a", "b", "c"))
 
 当函数返回单个表达式时，可以省略花括号并且在=符号之后指定代码
 
-```kotlin
+```kt
 fun double(x: Int): Int = x * 2
 ```
 
@@ -747,7 +747,7 @@ Kotlin 不推断具有块代码体的函数的返回类型
 
 函数的参数可以用`varargs`修饰符标记
 
-```kotlin
+```kt
 fun <T> asList(vararg ts: T): List<T> {
     val result = ArrayList()
     for (t in ts)
@@ -756,7 +756,7 @@ fun <T> asList(vararg ts: T): List<T> {
 }
 ```
 
-```kotlin
+```kt
 val list = asList(1, 2, 3)
 ```
 
@@ -768,7 +768,7 @@ val list = asList(1, 2, 3)
 * 它们必须只有一个参数
 * 其参数不接受可变数量的参数且不能有默认值
 
-```kotlin
+```kt
 infix fun Int.shl(x: Int): Int {
     // ...
 }
@@ -789,7 +789,7 @@ Kotlin支持局部函数，即一个函数在另一个函数内部
 
 函数可以有泛型参数，通过在函数名前使用尖括号指定
 
-```kotlin
+```kt
 fun <T> singletonList(item: T): List<T> {
     //
 }
@@ -805,7 +805,7 @@ fun <T> singletonList(item: T): List<T> {
 
 对于接受另一函数作为参数的函数，我们必须为该函数指定函数类型。
 
-```kotlin
+```kt
 fun <T> max(collection: Collection<T>, less: (T, T) -> Boolean): T? {
     var max: T? = null
     for (it in collection)
@@ -818,13 +818,13 @@ fun <T> max(collection: Collection<T>, less: (T, T) -> Boolean): T? {
 参数`less`的类型是`(T, T) -> Boolean`，即一个接受两个类型`T`的参数并返回一个布尔值的函数
 less作为一个函数使用：通过传入的两个`T`类型的参数来调用
 
-```kotlin
+```kt
 val compare: (x: T, y: T) -> Int = ...
 ```
 
 如果声明一个函数类型的可空变量，请将整个函数类型括在括号中并在其后加上句号
 
-```kotlin
+```kt
 val sum: ((Int, Int) -> Int)? = null
 ```
 
@@ -832,13 +832,13 @@ val sum: ((Int, Int) -> Int)? = null
 
 Lambda表达式的完整语法形式，即函数类型的字面值如下：
 
-```kotlin
+```kt
 val sum = { x: Int, y: Int -> x + y}
 ```
 
 完整语法形式如下：
 
-```kotlin
+```kt
 val sum: (Int, Int) -> Int = { x, y -> x + y}
 ```
 
@@ -853,14 +853,14 @@ lambda表示式总是括在花括号中，完整语法形式的参数声明放�
 
 可以使用限定返回语法从lambda显示返回一个值。否则，将隐身返回最后一个表达式的值。因此，以下两个片段是等价：
 
-```kotlin
+```kt
 ints.filter {
     val shouldFilter = it > 0
     shouldFilter
 }
 ```
 
-```kotlin
+```kt
 ints.filter {
     val shouldFilter = it > 0
     return@filter shouldFilter
@@ -871,7 +871,7 @@ ints.filter {
 
 lambda语法可以推断返回类型，但是如果要显示指定的话，可以使用匿名函数：
 
-```kotlin
+```kt
 fun(x: Int, y: Int): Int = x + y
 ```
 
@@ -883,7 +883,7 @@ fun(x: Int, y: Int): Int = x + y
 Lambda表达式或匿名函数，可以访问其闭包。即在外部作用域中声明的变量。
 与java不同的是可以修改闭包中捕获的变量:
 
-```kotlin
+```kt
 val sum = 0
 ints.filter { it > 0}
 ```
@@ -899,7 +899,7 @@ Kotlin提供了使用指定的接收者对象调用函数字面值的功能。�
 
 使用`inline`修饰符标记`lock()`函数
 
-```kotlin
+```kt
 inline fun <T> lock(lock: Lock, body: () -> T): T {
 
 }
@@ -919,7 +919,7 @@ inline fun <T> lock(lock: Lock, body: () -> T): T {
 
 有时候把一个对象*解构*成很多变量会很方便
 
-```kotlin
+```kt
 val (name, age) = person
 ```
 
@@ -927,7 +927,7 @@ val (name, age) = person
 
 区间表达式由具有操作符形式`..`的`rangeTo`函数辅以`in`和`!in`。区间是为任何可比较类型定义的，但对于整型原生类型，它有一个优化的实现
 
-```kotlin
+```kt
 if (i in 1..10) {
     println(i)
 }
@@ -949,7 +949,7 @@ if (i in 1..10) {
 
 #### Elvis操作符
 
-```kotlin
+```kt
 val l = b?.length ?: -1
 ```
 
@@ -965,7 +965,7 @@ val l = b?.length ?: -1
 
 如果尝试转换不成功则返回null
 
-```kotlin
+```kt
 val aInt: Int? = a as? Int
 ```
 
@@ -982,13 +982,13 @@ val aInt: Int? = a as? Int
 
 使用`::`操作符，可以把函数作为一个值传递。
 
-```kotlin
+```kt
 fun isOdd(x: Int) = x %2 != 0
 ```
 
 `::isOdd`是函数类型`(Int) -> Boolean`的一个值
 
-```kotlin
+```kt
 val c = MyClass::class
 ```
 
@@ -1001,7 +1001,7 @@ String::toCharArray为类型`String`提供了一个扩展函数`String.() -> Cha
 
 通过使用对象作为接收者，可以用相同`::class`语法获取对象的类的引用
 
-```kotlin
+```kt
 val ge = Generics()
 println(ge::class)
 ```
@@ -1013,12 +1013,12 @@ println(ge::class)
 2. 对于可变属性，`var y = 1`，`::y`返回KMutableProperty<Int>类型的一个值，该类型有一个`set()`方法
 
 3. 属性引用可以用在不需要参数的函数处
-    ```kotlin
+    ```kt
     val strs = listOf("a", "bc", "def")
     println(strs.map(String::length))
     ```
 4. 要访问类的成员属性
-    ```kotlin
+    ```kt
     class A(val p: Int)
 
     fun main(args: Array<String>) {
@@ -1031,7 +1031,7 @@ println(ge::class)
 
 `try`是一个表达式，即它可以有一个返回值：
 
-```kotlin
+```kt
 val a: Int? = try {
     parseInt(input)
 } catch (e: NumberFormatException) {
@@ -1049,7 +1049,7 @@ Kotlin没有受检的异常。
 
 在Kotlin中`throw`是表达式，所以你可以使用它作为Elvis表达式的一部分
 
-```kotlin
+```kt
 val s = person.name ? throw IllegalArgumentException("Name required")
 ```
 
