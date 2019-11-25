@@ -11,6 +11,68 @@
 2. 如上文所说，协程是一种组织代码的方式，因此可以将异步调用组织成顺序调用的书写形式，因而免除了回调地狱问题。
 3. 因为协程本质上是一种用户态线程，在线程基础上再加了一层自己的调度，它的创建和delay延迟调用都开销很小。
 
+举例场景，代码中三个函数，后一个函数都依赖前一个函数的执行结果：
+
+```kt
+fun requestToken(): Token {
+    // makes request for a token & waits
+    return token;
+}
+
+fun createPost(token: Token, item: Item): Post {
+    // sends item to the server & waits
+    return post
+}
+
+fun processPost(post: Post) {
+  // does some local processing of result
+}
+```
+
+三个函数都是耗时操作，因此不能再ui线程中运行，而且后两个函数都依赖于前一个函数的执行结果，三个任务不能并行运行
+
+### 回调
+
+常见的做法是使用回调
+
+```kt
+fun requestTokeAsync(cb: (Token) -> Unit) {..}
+
+fun createPostAsync(token: Token, item: Item, cb: (Post) -> Unit) {..}
+
+fun postItem(item: Item) {
+    requestTokenAsync { token ->
+        createPostAsync(token, item) { post ->
+            processPost(post)
+        }
+
+    }
+}
+```
+
+### Future
+
+Java 8 引入的CompletableFuture可以将多个任务串联起来，可以避免多层嵌套的问题
+
+### Rx编程
+
+### 协程方式
+
+```kt
+suspend fun requestToken(): Token { ... } //挂起函数
+suspend fun createPost(token: Token, item: Item): Post { ... } //挂起函数
+fun processPost(post: Post) { ... }
+
+fun postItem(item: Item) {
+    GlobalScope.launch {
+        val token = requestToken()
+        val post = createPost(token, item)
+        processPost(post)
+        //需要异常处理，直接加上try/catch，语句即可
+    }
+}
+```
+
 ## 定义
 
 协程通过将复杂性放入库来简化异步编程，程序的逻辑可以在协程中顺序地表达，而底层库会为我们解决其异步性。该库可以将用户代码的相关部分包装为回调、订阅相关事件、在不同线程上调度执行，而代码则保持如同顺序执行一样简单
@@ -19,15 +81,28 @@
 
 协程可以简化异步编程，可以顺序地表达程序，协程也提供了一种避免阻塞线程并用更廉价、更可控的操作替代线程阻塞的方法 – 协程挂起
 
+## 基本概念
+
+### 挂起函数
+
+```kt
+suspend fun requestToke(): Token {..}//挂起函数
+suspend fun createPost(token: Token, item: Item): Post {..}//挂起函数
+fun processPost(post: Post {..}
+```
+
+`suspend`修饰符标记，这表示两个函数都是挂起函数。
+挂起函数能够与普通函数相同方式获取参数和返回值，但是调用函数可能挂起协程，**挂起函数挂起协程时，不会阻塞协程所在的线程**。挂起函数执行完成后会恢复协程，后面的代码才会继续执行。但是挂起函数只能在协程中或其他挂起函数中调用。
+
 ## 在Kotlin使用
 
-```kotlin
+```kt
 suspend fun doSomething(foo: Foo): Bar {..}
 ```
 
 suspend关键字，就告诉编译器，这个方法是一个可中断方法。对于这样的方法，无法在常规方法中直接调用，只能在声明了接收suspend lambda原型的方法中才能调用，如内置的coroutine-builder:launch, async，当然也可以在另一个suspend方法中调用
 
-```kotlin
+```kt
 public fun CoroutineScope.launch(.., block: suspend CoroutineScope.() -> Unit): Job {
 
 }
@@ -37,7 +112,7 @@ public fun CoroutineScope.launch(.., block: suspend CoroutineScope.() -> Unit): 
 
 ### CoroutineScope和CoroutineContext
 
-CoroutineScope可以理解为协程本身，包含了CoroutineContext
+CoroutineScope可以理解为协程本身，包含了CoroutineContext。
 CoroutineContex协程上下文，是一些元素的集合，主要包括Job和CoroutineDispather元素，可以代表一个协程场景
 
 ### CoroutineDispatcher
